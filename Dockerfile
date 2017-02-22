@@ -4,7 +4,7 @@ MAINTAINER Spicer Mathtews <spicer@cloudmanic.com>
 
 ENV NGINX_VERSION 1.11.10
 
-# # Essential pkgs
+# Essential pkgs
 RUN apk add --no-cache openssh-client git tar php5-fpm curl bash vim
 
 # Essential php magic
