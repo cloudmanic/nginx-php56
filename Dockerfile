@@ -8,7 +8,7 @@ ENV NGINX_VERSION 1.11.10
 RUN apk add --no-cache openssh-client git tar php5-fpm curl bash vim
 
 # Essential php magic
-RUN apk add --no-cache php5-curl php5-dom php5-gd php5-ctype php5-zip php5-xml php5-iconv php5-mysql php5-sqlite3 php5-mysqli php5-pgsql php5-json php5-phar php5-openssl php5-pdo php5-mcrypt php5-pdo php5-pdo_pgsql php5-pdo_mysql php5-zlib
+RUN apk add --no-cache php5-curl php5-dom php5-gd php5-ctype php5-zip php5-xml php5-iconv php5-mysql php5-sqlite3 php5-mysqli php5-pgsql php5-json php5-phar php5-openssl php5-pdo php5-mcrypt php5-pdo php5-pdo_pgsql php5-pdo_mysql php5-opcache php5-zlib
 
 # Composer
 RUN curl --silent --show-error --fail --location \
@@ -27,11 +27,11 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--http-log-path=/logs/nginx.access.log \
 		--pid-path=/tmp/nginx.pid \
 		--lock-path=/tmp/nginx.lock \
-		--http-client-body-temp-path=/cache/nginx/client_temp \
-		--http-proxy-temp-path=/cache/nginx/proxy_temp \
-		--http-fastcgi-temp-path=/cache/nginx/fastcgi_temp \
-		--http-uwsgi-temp-path=/cache/nginx/uwsgi_temp \
-		--http-scgi-temp-path=/cache/nginx/scgi_temp \
+		--http-client-body-temp-path=/nginx-cache/client_temp \
+		--http-proxy-temp-path=/nginx-cache/proxy_temp \
+		--http-fastcgi-temp-path=/nginx-cache/fastcgi_temp \
+		--http-uwsgi-temp-path=/nginx-cache/uwsgi_temp \
+		--http-scgi-temp-path=/nginx-cache/scgi_temp \
 		--user=nginx \
 		--group=nginx \
 		--with-http_ssl_module \
@@ -155,7 +155,14 @@ RUN set -x \
    && adduser -u 1001 -D -S -G deploy deploy
     
 # Setup directory and Set perms for document root.
-RUN mkdir /www && mkdir -p /cache/nginx && chown -R www-data:www-data /www && chown -R www-data:www-data /cache && chown -R www-data:www-data /logs  
+RUN set -x \
+  && mkdir /www \ 
+  && mkdir /cache \  
+  && mkdir /nginx-cache \ 
+  && chown -R www-data:www-data /www \
+  && chown -R www-data:www-data /cache \ 
+  && chown -R www-data:www-data /logs \
+  && chown -R www-data:www-data /nginx-cache    
 
 # Copy over default files
 COPY index.php /www/public/index.php
